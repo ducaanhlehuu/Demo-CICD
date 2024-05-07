@@ -39,7 +39,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ducaanhlehuu/cicd:staging
+          tags: ducanh23073/cicd:staging
 
   pull-and-up:
     name: Pull new image and re run with the new version
