@@ -12,20 +12,27 @@ jobs:
     steps:
       - name: Checkout files
         uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 14
+      
       - run: npm install -D esbuild
-      - run: npm run build        
+      - run: npm run build
+        
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
+      
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
@@ -34,17 +41,19 @@ jobs:
           push: true
           tags: ducaanhlehuu/cicd:staging
 
-
   pull-and-up:
     name: Pull new image and re run with the new version
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
-      - uses: appleboy/ssh-action@master
+      - name: SSH into the server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             cd ${{ secrets.PATH }}
-            docker-compose pull && docker-compose down && docker-compose up -d
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
